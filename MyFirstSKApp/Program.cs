@@ -11,23 +11,21 @@ var kernel = kernelBuilder.Build();
 
 var chatClient = kernel.GetRequiredService<IChatClient>();
 
-var prompt = """
-    Cuáles son las ciudades más grandes del mundo?
-    Regresa un arreglo en JSON, donde cada elemento tiene
-    la siguiente estructura: Position, Name, Country, Population
-    """;
-
-var chatOptions = new ChatOptions()
+var messages = new List<ChatMessage>
 {
-    Temperature = 0.1f,
-    ResponseFormat = ChatResponseFormat.Json
+    new ChatMessage(ChatRole.System, "Eres un agente muy útil.")
 };
 
-var response = await chatClient.GetResponseAsync<IEnumerable<City>>(prompt, chatOptions);
-
-foreach (var city in response.Result)
+while (true)
 {
-    Console.WriteLine(city);
-}
+    Console.WriteLine("Prompt: ");
+    var prompt = Console.ReadLine();
 
-public record City(int Position, string Name, string Country, string Population);
+    messages.Add(new ChatMessage(ChatRole.User, prompt));
+
+    var response = await chatClient.GetResponseAsync(messages);
+
+    messages.Add(new ChatMessage(ChatRole.Assistant, response.Text));
+
+    Console.WriteLine($"\n{response.Text}\n");
+}
