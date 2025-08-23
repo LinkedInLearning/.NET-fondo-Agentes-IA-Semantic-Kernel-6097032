@@ -1,31 +1,29 @@
-﻿using Microsoft.Extensions.AI;
-using Microsoft.SemanticKernel;
+﻿using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
 
 var modelId = "gpt-4o";
 var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 var kernelBuilder = Kernel.CreateBuilder();
 
-kernelBuilder.AddOpenAIChatClient(modelId, apiKey);
+kernelBuilder.AddOpenAIChatClient(modelId, apiKey)
+             .AddOpenAIChatCompletion(modelId, apiKey);
 
 var kernel = kernelBuilder.Build();
 
-var chatClient = kernel.GetRequiredService<IChatClient>();
+var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
 
-var messages = new List<ChatMessage>
-{
-    new ChatMessage(ChatRole.System, "Eres un agente muy útil.")
-};
+var chatHistory = new ChatHistory("Eres un agente muy útil");
 
 while (true)
 {
-    Console.WriteLine("Prompt: ");
+    Console.Write("Prompt: ");
     var prompt = Console.ReadLine();
 
-    messages.Add(new ChatMessage(ChatRole.User, prompt));
+    chatHistory.AddUserMessage(prompt);
 
-    var response = await chatClient.GetResponseAsync(messages);
+    var response = await chatCompletionService.GetChatMessageContentAsync(chatHistory);
 
-    messages.Add(new ChatMessage(ChatRole.Assistant, response.Text));
+    chatHistory.AddAssistantMessage(response.Content);
 
-    Console.WriteLine($"\n{response.Text}\n");
+    Console.WriteLine($"\n{response.Content}\n");
 }
