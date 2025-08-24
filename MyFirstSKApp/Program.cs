@@ -6,8 +6,7 @@ var modelId = "gpt-4o";
 var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 var kernelBuilder = Kernel.CreateBuilder();
 
-kernelBuilder.AddOpenAIChatClient(modelId, apiKey)
-             .AddOpenAIChatCompletion(modelId, apiKey)
+kernelBuilder.AddOpenAIChatCompletion(modelId, apiKey)
              .Services.AddLogging(logging =>
              {
                  logging.AddConsole();
@@ -20,4 +19,8 @@ while (true)
 {
     Console.Write("Prompt: ");
     var prompt = Console.ReadLine();
+
+    var result = await kernel.InvokePromptAsync(prompt);
+
+    Console.WriteLine($"\n{result.GetValue<string>()}\n");
 }
