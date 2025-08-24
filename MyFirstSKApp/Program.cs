@@ -16,16 +16,53 @@ kernelBuilder.AddOpenAIChatCompletion(modelId, apiKey)
 
 var kernel = kernelBuilder.Build();
 
+var promptTemplate = """
+        Eres un agente muy útil.
+
+        #Histórico de mensajes
+        {{$history}}
+
+        #Nuevo mensaje
+        User: {{$user_message}}
+
+        Assistant:
+    """;
+
 var settings = new OpenAIPromptExecutionSettings() { Temperature = 0.7f, MaxTokens = 1000 };
 
-var kernelArgs = new KernelArguments(settings);
+var history = new List<Message>();
 
 while (true)
 {
     Console.Write("Prompt: ");
-    var prompt = Console.ReadLine();
+    var message = Console.ReadLine();
 
-    var result = await kernel.InvokePromptAsync(prompt, kernelArgs);
+    var kernelArgs = new KernelArguments(settings)
+    {
+        { "history", history.AsString() },
+        { "user_message", message }
+    };
 
-    Console.WriteLine($"\n{result.GetValue<string>()}\n");
+    history.Add(new Message("User", message));
+
+    var result = await kernel.InvokePromptAsync(promptTemplate, kernelArgs);
+
+    var resultContent = result.GetValue<string>();
+
+    history.Add(new Message("Assistant", resultContent));
+    
+    Console.WriteLine($"\n{resultContent}\n");
+
 }
+
+static class HistoryExtensions
+{
+    public static string AsString(this IEnumerable<Message> history)
+    {
+        return string.Join("\n", history
+               .TakeLast(10)
+               .Select(t => $"{t.Role}: {t.Content.Replace("\n", " ").Trim()}"));
+    }
+}
+
+public record Message(string Role, string Content);
