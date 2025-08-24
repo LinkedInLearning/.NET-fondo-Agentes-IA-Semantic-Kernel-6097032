@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.PromptTemplates.Handlebars;
-using Microsoft.SemanticKernel.PromptTemplates.Liquid;
 
 var modelId = "gpt-4o";
 var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
