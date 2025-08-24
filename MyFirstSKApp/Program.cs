@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Microsoft.SemanticKernel.PromptTemplates.Handlebars;
 using Microsoft.SemanticKernel.PromptTemplates.Liquid;
 
 var modelId = "gpt-4o";
@@ -22,16 +23,16 @@ var promptTemplate = """
             Eres un agente muy útil.
         </message>
 
-        {% for h in history %}
-        <message role="{{h.role}}">{{h.content | strip | upcase}}</message>
-        {% endfor %}
+        {{#each history}}
+        <message role="{{role}}">{{content}}</message>
+        {{/each}}
     """;
 
 var settings = new OpenAIPromptExecutionSettings() { Temperature = 0.7f, MaxTokens = 1000 };
 
 var history = new List<Message>();
 
-var factory = new LiquidPromptTemplateFactory();
+var factory = new HandlebarsPromptTemplateFactory();
 
 while (true)
 {
@@ -47,7 +48,7 @@ while (true)
 
     var result = await kernel.InvokePromptAsync(promptTemplate,
                                                 kernelArgs, 
-                                                templateFormat:"liquid",
+                                                templateFormat:"handlebars",
                                                 promptTemplateFactory: factory);
 
     var resultContent = result.GetValue<string>();
