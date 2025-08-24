@@ -4,6 +4,8 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.Plugins.Core;
 using Microsoft.SemanticKernel.PromptTemplates.Handlebars;
+using System.ComponentModel;
+using System.Diagnostics;
 
 var modelId = "gpt-4o";
 var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
@@ -11,6 +13,7 @@ var kernelBuilder = Kernel.CreateBuilder();
 
 kernelBuilder.AddOpenAIChatCompletion(modelId, apiKey)
              .Plugins.AddFromType<TimePlugin>()
+                     .AddFromType<ProcessPlugin>()
              .Services.AddLogging(logging =>
              {
                  logging.AddConsole();
@@ -66,3 +69,14 @@ while (true)
 }
 
 public record Message(string Role, string Content);
+
+
+public class ProcessPlugin
+{
+    [KernelFunction]
+    [Description("Regresa la información de todos los procesos de la máquina.")]
+    public IEnumerable<string> GetProcesses()
+    {
+        return Process.GetProcesses().Select(p => $"Id:{p.Id} ProcessName:{p.ProcessName}");
+    }
+}
