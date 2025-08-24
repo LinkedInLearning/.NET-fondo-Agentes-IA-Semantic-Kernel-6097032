@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Microsoft.SemanticKernel.Plugins.Core;
 using Microsoft.SemanticKernel.PromptTemplates.Handlebars;
 
 var modelId = "gpt-4o";
@@ -9,6 +10,7 @@ var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 var kernelBuilder = Kernel.CreateBuilder();
 
 kernelBuilder.AddOpenAIChatCompletion(modelId, apiKey)
+             .Plugins.AddFromType<TimePlugin>()
              .Services.AddLogging(logging =>
              {
                  logging.AddConsole();
@@ -27,7 +29,12 @@ var promptTemplate = """
         {{/each}}
     """;
 
-var settings = new OpenAIPromptExecutionSettings() { Temperature = 0.7f, MaxTokens = 1000 };
+var settings = new OpenAIPromptExecutionSettings() 
+{ 
+    Temperature = 0.7f, 
+    MaxTokens = 1000,
+    FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
+};
 
 var history = new List<Message>();
 
