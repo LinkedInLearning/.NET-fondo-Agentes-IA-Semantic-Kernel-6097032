@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Microsoft.SemanticKernel.PromptTemplates.Liquid;
 
 var modelId = "gpt-4o";
 var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
@@ -17,20 +18,20 @@ kernelBuilder.AddOpenAIChatCompletion(modelId, apiKey)
 var kernel = kernelBuilder.Build();
 
 var promptTemplate = """
-        Eres un agente muy útil.
+        <message role="system">
+            Eres un agente muy útil.
+        </message>
 
-        #Histórico de mensajes
-        {{$history}}
-
-        #Nuevo mensaje
-        User: {{$user_message}}
-
-        Assistant:
+        {% for h in history %}
+        <message role="{{h.role}}">{{h.content | strip | upcase}}</message>
+        {% endfor %}
     """;
 
 var settings = new OpenAIPromptExecutionSettings() { Temperature = 0.7f, MaxTokens = 1000 };
 
 var history = new List<Message>();
+
+var factory = new LiquidPromptTemplateFactory();
 
 while (true)
 {
@@ -39,13 +40,15 @@ while (true)
 
     var kernelArgs = new KernelArguments(settings)
     {
-        { "history", history.AsString() },
-        { "user_message", message }
+        { "history", history }
     };
 
     history.Add(new Message("User", message));
 
-    var result = await kernel.InvokePromptAsync(promptTemplate, kernelArgs);
+    var result = await kernel.InvokePromptAsync(promptTemplate,
+                                                kernelArgs, 
+                                                templateFormat:"liquid",
+                                                promptTemplateFactory: factory);
 
     var resultContent = result.GetValue<string>();
 
@@ -53,16 +56,6 @@ while (true)
     
     Console.WriteLine($"\n{resultContent}\n");
 
-}
-
-static class HistoryExtensions
-{
-    public static string AsString(this IEnumerable<Message> history)
-    {
-        return string.Join("\n", history
-               .TakeLast(10)
-               .Select(t => $"{t.Role}: {t.Content.Replace("\n", " ").Trim()}"));
-    }
 }
 
 public record Message(string Role, string Content);
