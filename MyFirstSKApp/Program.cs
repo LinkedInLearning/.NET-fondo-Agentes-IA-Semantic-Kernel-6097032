@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.Plugins.Core;
-using Microsoft.SemanticKernel.PromptTemplates.Handlebars;
 using System.ComponentModel;
 using System.Diagnostics;
 
@@ -23,13 +22,12 @@ kernelBuilder.AddOpenAIChatCompletion(modelId, apiKey)
 var kernel = kernelBuilder.Build();
 
 var promptTemplate = """
-        <message role="system">
-            Eres un agente muy útil.
-        </message>
+        Eres un agente muy útil.
 
-        {{#each history}}
-        <message role="{{role}}">{{content}}</message>
-        {{/each}}
+        #Histórico de mensajes
+        {{$history}}
+
+        Assistant:
     """;
 
 var settings = new OpenAIPromptExecutionSettings() 
@@ -40,8 +38,6 @@ var settings = new OpenAIPromptExecutionSettings()
 };
 
 var history = new List<Message>();
-
-var factory = new HandlebarsPromptTemplateFactory();
 
 while (true)
 {
@@ -56,9 +52,7 @@ while (true)
     history.Add(new Message("User", message));
 
     var result = await kernel.InvokePromptAsync(promptTemplate,
-                                                kernelArgs, 
-                                                templateFormat:"handlebars",
-                                                promptTemplateFactory: factory);
+                                                kernelArgs);
 
     var resultContent = result.GetValue<string>();
 
