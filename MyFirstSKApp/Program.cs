@@ -18,7 +18,8 @@ kernelBuilder.AddOpenAIChatCompletion(modelId, apiKey)
              {
                  logging.AddConsole();
                  logging.SetMinimumLevel(LogLevel.Trace);
-             }).AddSingleton<IFunctionInvocationFilter, MyFunctionInvocationFilter>();
+             }).AddSingleton<IFunctionInvocationFilter, MyFunctionInvocationFilter>()
+               .AddSingleton<IAutoFunctionInvocationFilter, MyAutoFunctionInvocationFilter>();
 
 var kernel = kernelBuilder.Build();
 
@@ -48,13 +49,13 @@ while (true)
     Console.Write("Prompt: ");
     var message = Console.ReadLine();
 
+    history.Add(new Message("User", message));
+
     var kernelArgs = new KernelArguments(settings)
     {
         { "history", history.AsString() },
         { "user_id", 25 }
     };
-
-    history.Add(new Message("User", message));
 
     var result = await kernel.InvokePromptAsync(promptTemplate,
                                                 kernelArgs);
@@ -112,6 +113,15 @@ public class MyFunctionInvocationFilter : IFunctionInvocationFilter
 {
     public Task OnFunctionInvocationAsync(FunctionInvocationContext context, 
                                           Func<FunctionInvocationContext, Task> next)
+    {
+        return next(context);
+    }
+}
+
+public class MyAutoFunctionInvocationFilter : IAutoFunctionInvocationFilter
+{
+    public Task OnAutoFunctionInvocationAsync(AutoFunctionInvocationContext context, 
+                                              Func<AutoFunctionInvocationContext, Task> next)
     {
         return next(context);
     }
