@@ -46,7 +46,7 @@ while (true)
 
     var kernelArgs = new KernelArguments(settings)
     {
-        { "history", history }
+        { "history", history.AsString() }
     };
 
     history.Add(new Message("User", message));
@@ -60,6 +60,16 @@ while (true)
     
     Console.WriteLine($"\n{resultContent}\n");
 
+}
+
+static class HistoryExtensions
+{
+    public static string AsString(this IEnumerable<Message> history)
+    {
+        return string.Join("\n", history
+               .TakeLast(10)
+               .Select(t => $"{t.Role}: {t.Content.Replace("\n", " ").Trim()}"));
+    }
 }
 
 public record Message(string Role, string Content);
