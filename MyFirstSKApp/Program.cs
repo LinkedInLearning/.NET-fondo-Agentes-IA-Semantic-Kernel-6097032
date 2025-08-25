@@ -18,7 +18,7 @@ kernelBuilder.AddOpenAIChatCompletion(modelId, apiKey)
              {
                  logging.AddConsole();
                  logging.SetMinimumLevel(LogLevel.Trace);
-             });
+             }).AddSingleton<IFunctionInvocationFilter, MyFunctionInvocationFilter>();
 
 var kernel = kernelBuilder.Build();
 
@@ -105,5 +105,14 @@ public record UserProfile(int Id, string FullName, string Department)
     public override string ToString()
     {
         return $"Id: {Id}\n Nombre completo: {FullName}\n Departamento: {Department}\n";
+    }
+}
+
+public class MyFunctionInvocationFilter : IFunctionInvocationFilter
+{
+    public Task OnFunctionInvocationAsync(FunctionInvocationContext context, 
+                                          Func<FunctionInvocationContext, Task> next)
+    {
+        return next(context);
     }
 }
