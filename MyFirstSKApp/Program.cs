@@ -13,6 +13,7 @@ var kernelBuilder = Kernel.CreateBuilder();
 kernelBuilder.AddOpenAIChatCompletion(modelId, apiKey)
              .Plugins.AddFromType<TimePlugin>()
                      .AddFromType<ProcessPlugin>()
+                     .AddFromType<UserProfilePlugin>()
              .Services.AddLogging(logging =>
              {
                  logging.AddConsole();
@@ -23,6 +24,9 @@ var kernel = kernelBuilder.Build();
 
 var promptTemplate = """
         Eres un agente muy útil.
+
+        #Usuario actual
+        {{UserProfilePlugin.GetUserProfile $user_id}}
 
         #Histórico de mensajes
         {{$history}}
@@ -46,7 +50,8 @@ while (true)
 
     var kernelArgs = new KernelArguments(settings)
     {
-        { "history", history.AsString() }
+        { "history", history.AsString() },
+        { "user_id", 25 }
     };
 
     history.Add(new Message("User", message));
@@ -82,5 +87,23 @@ public class ProcessPlugin
     public IEnumerable<string> GetProcesses()
     {
         return Process.GetProcesses().Select(p => $"Id:{p.Id} ProcessName:{p.ProcessName}");
+    }
+}
+
+public class UserProfilePlugin
+{
+    [KernelFunction]
+    [Description("Regresa el perfil completo del usuario especificado.")]
+    public UserProfile GetUserProfile([Description("El identificador único del usuario.")] int id)
+    {
+        return new UserProfile(id, "Rodrigo Díaz Concha", "SK Course Authors");
+    }
+}
+
+public record UserProfile(int Id, string FullName, string Department)
+{
+    public override string ToString()
+    {
+        return $"Id: {Id}\n Nombre completo: {FullName}\n Departamento: {Department}\n";
     }
 }
