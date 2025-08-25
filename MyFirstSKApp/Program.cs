@@ -5,6 +5,7 @@ using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.Plugins.Core;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 var modelId = "gpt-4o";
 var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
@@ -19,7 +20,8 @@ kernelBuilder.AddOpenAIChatCompletion(modelId, apiKey)
                  logging.AddConsole();
                  logging.SetMinimumLevel(LogLevel.Trace);
              }).AddSingleton<IFunctionInvocationFilter, MyFunctionInvocationFilter>()
-               .AddSingleton<IAutoFunctionInvocationFilter, MyAutoFunctionInvocationFilter>();
+               .AddSingleton<IAutoFunctionInvocationFilter, MyAutoFunctionInvocationFilter>()
+               .AddSingleton<IPromptRenderFilter, EmailBlockerPromptRenderFilter>();
 
 var kernel = kernelBuilder.Build();
 
@@ -124,5 +126,26 @@ public class MyAutoFunctionInvocationFilter : IAutoFunctionInvocationFilter
                                               Func<AutoFunctionInvocationContext, Task> next)
     {
         return next(context);
+    }
+}
+
+public class EmailBlockerPromptRenderFilter : IPromptRenderFilter
+{
+    private readonly Regex EmailRegex = new(
+        @"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    public async Task OnPromptRenderAsync(PromptRenderContext context, 
+                                    Func<PromptRenderContext, Task> next)
+    {
+        await next(context);
+        //Ya se renderizó
+
+        if (string.IsNullOrWhiteSpace(context.RenderedPrompt))
+        {
+            return;
+        }
+
+        context.RenderedPrompt = EmailRegex.Replace(context.RenderedPrompt, "[CORREO ELIMINADO]");
     }
 }
