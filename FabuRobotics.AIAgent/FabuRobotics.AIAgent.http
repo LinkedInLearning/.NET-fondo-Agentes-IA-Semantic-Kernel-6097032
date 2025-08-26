@@ -1,5 +1,5 @@
 @FabuRobotics.AIAgent_HostAddress = http://localhost:5116
-@OrderId = b7dc6819-2109-4b11-9d89-507dbd9493cd
+@OrderId = 9a6da6cd-a6b1-421f-8e17-6fb49bcfbcec
 
 ### Hola
 GET {{FabuRobotics.AIAgent_HostAddress}}/agent?message=hola%20quien%20eres
@@ -20,4 +20,18 @@ Accept: application/json
 GET {{FabuRobotics.AIAgent_HostAddress}}/agent?message=dime%20si%20podemos%20ensamblar%20el%20FB-03
 Accept: application/json
 
+### Crea nueva orden
+
+GET {{FabuRobotics.AIAgent_HostAddress}}/agent?message=crea%20una%20nueva%20orden%20para%20el%20cliente%20C001%20para%20ensamblar%202%20FB-01
+Accept: application/json
+
+### Inicia ensamblaje
+
+GET {{FabuRobotics.AIAgent_HostAddress}}/agent?message=inicia%20el%20ensamblaje%20de%20la%20orden%20{{OrderId}}
+Accept: application/json
+
+### Consulta estatus
+
+GET {{FabuRobotics.AIAgent_HostAddress}}/agent?message=cual%20es%20el%20estatus%20de%20la%20orden%20{{OrderId}}
+Accept: application/json
 

@@ -14,6 +14,7 @@ builder.Services.AddKernel()
                     .AddFromType<InventoryPlugin>()
                     .AddFromType<ProductionPlugin>();
 builder.Services.AddScoped<AgentService>();
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
