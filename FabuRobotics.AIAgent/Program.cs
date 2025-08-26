@@ -1,3 +1,4 @@
+using FabuRobotics.AIAgent.Services;
 using Microsoft.SemanticKernel;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddKernel()
                 .AddOpenAIChatCompletion(modelId!, apiKey!);
+builder.Services.AddScoped<AgentService>();
 
 var app = builder.Build();
 
