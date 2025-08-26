@@ -43,6 +43,7 @@ if (bool.TryParse(Environment.GetEnvironmentVariable("VectorizeAtStartup"), out 
         {
             var kernelMemory = scope.ServiceProvider.GetRequiredService<IKernelMemory>();
             await kernelMemory.ImportWebPageAsync("https://faburobotics.com");
+            await kernelMemory.ImportDocumentAsync("FB-02_Fact_Sheet_Spanish.pdf", "fb-02");
         }
         catch (Exception ex)
         {

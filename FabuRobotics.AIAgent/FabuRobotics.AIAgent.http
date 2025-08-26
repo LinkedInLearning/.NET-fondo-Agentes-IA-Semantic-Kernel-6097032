@@ -38,3 +38,7 @@ Accept: application/json
 ### Pregunta acerca de FB-01
 GET {{FabuRobotics.AIAgent_HostAddress}}/agent?message=hola%20que%20es%20FB-01
 Accept: application/json
+
+### Pregunta acerca de la batería del FB-02
+GET {{FabuRobotics.AIAgent_HostAddress}}/agent?message=hola%20cuanto%20le%20dura%20la%20bateria%20al%20fb-02
+Accept: application/json
