@@ -35,6 +35,22 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+if (bool.TryParse(Environment.GetEnvironmentVariable("VectorizeAtStartup"), out bool vectorize) && vectorize)
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        try
+        {
+            var kernelMemory = scope.ServiceProvider.GetRequiredService<IKernelMemory>();
+            await kernelMemory.ImportWebPageAsync("https://faburobotics.com");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"El proceso de importación ha fallado: {ex.Message}");
+        }
+    }
+}
+
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
