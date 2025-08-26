@@ -1,5 +1,5 @@
 @FabuRobotics.AIAgent_HostAddress = http://localhost:5116
-@OrderId = 9a6da6cd-a6b1-421f-8e17-6fb49bcfbcec
+@OrderId = 643fd71a-77cc-487a-9d1f-66b1fcdac2bd
 
 ### Hola
 GET {{FabuRobotics.AIAgent_HostAddress}}/agent?message=hola%20quien%20eres
@@ -35,3 +35,6 @@ Accept: application/json
 GET {{FabuRobotics.AIAgent_HostAddress}}/agent?message=cual%20es%20el%20estatus%20de%20la%20orden%20{{OrderId}}
 Accept: application/json
 
+### Pregunta acerca de FB-01
+GET {{FabuRobotics.AIAgent_HostAddress}}/agent?message=hola%20que%20es%20FB-01
+Accept: application/json
