@@ -1,0 +1,6 @@
+@FabuRobotics.AIAgent_HostAddress = http://localhost:5116
+
+GET {{FabuRobotics.AIAgent_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
