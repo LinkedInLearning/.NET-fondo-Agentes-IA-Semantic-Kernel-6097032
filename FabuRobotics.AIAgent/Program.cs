@@ -11,7 +11,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddKernel()
                 .AddOpenAIChatCompletion(modelId!, apiKey!)
                 .Plugins
-                    .AddFromType<InventoryPlugin>();
+                    .AddFromType<InventoryPlugin>()
+                    .AddFromType<ProductionPlugin>();
 builder.Services.AddScoped<AgentService>();
 
 var app = builder.Build();
