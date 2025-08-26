@@ -4,3 +4,18 @@ GET {{FabuRobotics.AIAgent_HostAddress}}/agent?message=hola%20quien%20eres
 Accept: application/json
 
 ###
+
+GET {{FabuRobotics.AIAgent_HostAddress}}/agent?message=dime%20si%20podemos%20ensamblar%20el%20FB-01
+Accept: application/json
+
+###
+
+GET {{FabuRobotics.AIAgent_HostAddress}}/agent?message=dime%20si%20podemos%20ensamblar%20el%20FB-02
+Accept: application/json
+
+###
+
+GET {{FabuRobotics.AIAgent_HostAddress}}/agent?message=dime%20si%20podemos%20ensamblar%20el%20FB-03
+Accept: application/json
+
+###
