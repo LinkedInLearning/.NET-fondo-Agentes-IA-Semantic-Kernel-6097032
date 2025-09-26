@@ -1,6 +1,6 @@
 # .NET a fondo: Agentes de IA con Semantic Kernel
 
-Este es el repositorio del curso *.NET a fondo: Agentes de IA con Semantic Kernel*. El curso completo está disponible en [LinkedIn Learning].
+Este es el repositorio del curso *.NET a fondo: Agentes de IA con Semantic Kernel*. El curso completo está disponible en [LinkedIn Learning][lil-course-url].
 
 DESCRIPCIÓN DEL CURSO
 
